@@ -1,4 +1,4 @@
-# VOLTAMMETER_ESP32_S3_YCHEV003
+# VOLTAMMETER ESP32-S3 (YCHEV003)
 Трехканальный вольтамперметр на базе ESP32-S3 с записью данных в лог и передачей данных по WI-FI (YCHEV003)
 
 <img src="https://github.com/chevichelov/VOLTAMMETER_ESP32_S3_YCHEV003/blob/main/IMG/COVER.jpg" />
