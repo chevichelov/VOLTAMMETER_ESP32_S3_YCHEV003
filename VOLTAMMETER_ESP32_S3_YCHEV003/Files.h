@@ -307,11 +307,18 @@ const char settings_html[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     trueRequest.open('GET', '/setting?password=' + PASSWORD + '&time=' + TIME + '&ch1=' + CH1 + '&ch2=' + CH2 + '&ch3=' + CH3, true);
     trueRequest.onload = function() {
       if (this.status == 200){
-      document.getElementById('notification').innerHTML       = '<div>Сохранено!</div>';
-      document.getElementById('notification').style.background  = '#00FF00';
-      setTimeout(() => {
-        clear();
-      }, 1000);
+        document.getElementById('notification').innerHTML       = '<div>Сохранено!</div>';
+        document.getElementById('notification').style.background  = '#00FF00';
+        setTimeout(() => {
+          clear();
+        }, 1000);
+      }
+      if (this.status == 400){
+        document.getElementById('notification').innerHTML       = '<div>Длина пароля более 63 символов!</div>';
+        document.getElementById('notification').style.background  = '#FF0000';
+        setTimeout(() => {
+          clear();
+        }, 1000);
       }
     }
     trueRequest.send();

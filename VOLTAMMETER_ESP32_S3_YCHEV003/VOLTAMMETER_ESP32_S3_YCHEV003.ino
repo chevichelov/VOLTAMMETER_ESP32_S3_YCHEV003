@@ -304,6 +304,11 @@ void setup(void)
       const char* PARAM_CH3 = "ch3";
       if (request->hasParam(PARAM_PASSWORD)) 
       {
+        if (request->getParam(PARAM_PASSWORD)->value().length() > 63)
+        {
+          request->send(400, "text/plain; charset=utf-8", "ERROR_LENGTH_PASSWORD");
+          return;
+        }
         memset(SAVE.PASSWORD, 0, (sizeof(SAVE.PASSWORD)/sizeof(char)) - 1);
         strncpy(SAVE.PASSWORD, request->getParam(PARAM_PASSWORD)->value().c_str(), request->getParam(PARAM_PASSWORD)->value().length());
       }
@@ -381,7 +386,9 @@ void KEYBOARD()
   for(uint8_t y = 0; y <= 2; ++y)
     for(uint8_t x = 0; x <= 3; ++x)
     {
-      CANVAS->fillRect(20 + x * 180, 230 + y * 85, 150, 70, 0x39e8);
+      CANVAS->fillRect(20 + x * 180, 230 + y * 85, 150, 70, DATA.MATRIX_DATA[BATTON_NAMBER] && BATTON_NAMBER < 11 ? 0xC69B : 0x39e8);
+      if (DATA.MATRIX_DATA[BATTON_NAMBER])
+        DATA.MATRIX_DATA[BATTON_NAMBER] = false;
       CANVAS->drawRect(20 + x * 180, 230 + y * 85, 150, 70, 0xCE9A);
       CANVAS->setCursor((BATTON_NAMBER == 11 ? 70 : 80) + x * 180, 280 + y * 85);
       CANVAS->print(BATTON_NAME[BATTON_NAMBER]);
@@ -449,10 +456,20 @@ void MAIN()
 
     CANVAS->setCursor(600, 80 + i * 130 + (i ? 50 : 0));
     CANVAS->setTextColor(SAVE.COLOR[4][0]);
+    if(BUTTON_SELECT_CH_LEFT[i].IS_PRESSED)
+    {
+      CANVAS->fillCircle(615, 63 + i * 130 + (i ? 50 : 0), 20, 0x39e8);
+      BUTTON_SELECT_CH_LEFT[i].IS_PRESSED = false;
+    }
     CANVAS->print(F("< "));
     CANVAS->setTextColor(0x07e0);
     CANVAS->print(SAVE.ACTIV_NAMBER[i] + 1);
     CANVAS->setTextColor(SAVE.COLOR[4][0]);
+    if(BUTTON_SELECT_CH_RIGHT[i].IS_PRESSED)
+    {
+      CANVAS->fillCircle(690, 63 + i * 130 + (i ? 50 : 0), 20, 0x39e8);
+      BUTTON_SELECT_CH_RIGHT[i].IS_PRESSED = false;
+    }
     CANVAS->print(F(" >"));
 
     CANVAS->setFont(&arialmt18pt7b);
@@ -747,7 +764,8 @@ void loop()
             for(uint8_t x = 0; x <= 3; ++x)
             {
               if (X >= 20 + x * 180 && X <= 170 + x * 180 && Y >= 230 + y * 85 && Y <= 300 + y * 85)
-              {
+              { 
+                DATA.MATRIX_DATA[BATTON_NAMBER] = true;
                 if (BATTON_NAME[BATTON_NAMBER] < 10)
                 {   
                     if (SAVE.COUNT_LIMIT_DOWN[SAVE.SELECT_LIMIT] == 0 || SAVE.COUNT_LIMIT_DOWN[SAVE.SELECT_LIMIT] == 4)
@@ -935,7 +953,7 @@ void loop()
                   GFX->fillScreen(SAVE.COLOR[4][1]);
                   MAIN_MENU();
                   EEPROM_SAVE();
-                  DATA.IS_SELECT_COLOR  = false;
+                  DATA.IS_SELECT_COLOR            = false;
                 }
                 DATA.MATRIX_TIME  = millis();
               }
